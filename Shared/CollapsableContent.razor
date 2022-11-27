@@ -1,0 +1,26 @@
+﻿
+<div>
+	<div class="control">
+		<button class="button @ButtonClass" type="button" @onclick="ToggleVisibility">@CollapseLabel</button>
+	</div>
+	<div class="@CollapseClass">
+		@Content
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public RenderFragment Content { get; set; } = null!;
+	[Parameter]
+	public string CollapseLabel { get; set; } = "Hide";
+	[Parameter]
+	public string ButtonClass { get; set; } = "is-primary";
+	[Parameter]
+	public bool IsHidden { get; set; }
+	
+	private string? CollapseClass => IsHidden ? "is-hidden" : null;
+
+	private void ToggleVisibility() {
+		IsHidden = !IsHidden;
+	}
+}
