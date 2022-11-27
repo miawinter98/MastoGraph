@@ -1,8 +1,9 @@
-﻿@import "lib/bulma/bulma.sass";
-
-// Bulma Customizations here
+﻿// Bulma Customizations here
 // -------------------------
 
+$primary: #0D47A1;
+
+@import "lib/bulma/bulma.sass";
 
 // Blazor schenanigans
 // -------------------
