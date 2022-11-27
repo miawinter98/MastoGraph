@@ -1,11 +1,14 @@
-﻿
+﻿@using System.Text.Encodings.Web
+
 <footer class="footer">
+	<div class="field is-grouped is-grouped-multiline is-centered">
+		<GithubTag />
+		<LinkTag Icon="globe" Link="https://miawinter.de" Label="My Website" />
+		<LinkTag ColorClass="is-link" Icon="bookmark" Link="@("https://tech.lgbt/@MiaWinter")" Label="My Mastodon" />
+	</div>
 	<div class="content has-text-centered">
 		<p>
 			<strong>MastoGraph</strong> by <a href="https://miawinter.de/">Mia Winter</a>
-			<span class="tags is-centered m-3">
-				<GithubTag />
-			</span>
 		</p>
 	</div>
 </footer>
