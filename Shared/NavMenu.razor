@@ -11,10 +11,12 @@
 
 	<div class="navbar-menu @NavMenuCssClass">
 		<div class="navbar-end">
-			<NavLink class="navbar-item" href="" Match="NavLinkMatch.All">
+			<NavLink class="navbar-item" href="" Match="NavLinkMatch.All" 
+			         ActiveClass="is-active" @onclick="HideNavMenu">
 				Home
 			</NavLink>
-			<NavLink class="navbar-item" href="about" Match="NavLinkMatch.All">
+			<NavLink class="navbar-item" href="about" Match="NavLinkMatch.All"
+					 ActiveClass="is-active" @onclick="HideNavMenu">
 				About
 			</NavLink>
 		</div>
@@ -29,4 +31,8 @@
     private void ToggleNavMenu() {
         ShowNavigationMenu = !ShowNavigationMenu;
     }
+
+	private void HideNavMenu() {
+		ShowNavigationMenu = false;
+	}
 }
