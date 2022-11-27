@@ -43,7 +43,7 @@ async function onFetch(event) {
         const cache = await caches.open(cacheName);
         cachedResponse = await cache.match(request);
     }
-    if (event.request.method === 'POST' && url.pathname === '/') {
+    if (event.request.method === 'POST' && new URL(event.request.url).pathname === '/') {
         event.respondWith((async () => {
             const formData = await event.request.formData();
             const link = formData.get('link') || formData.get('text');
