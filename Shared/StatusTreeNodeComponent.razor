@@ -1,0 +1,88 @@
+﻿@using Mastonet.Entities
+@inject NavigationManager NavigationManager
+
+@if (Node.IsRoot && !string.IsNullOrEmpty(Status.InReplyToId)) {
+	<a class="button mb-2" href="@(NavigationManager.BaseUri + Instance)/@(Status.InReplyToId)">
+		Open containing Context
+	</a>
+}
+<div class="media">
+	@if (Node.Children.Count > 0) {
+		<div class="media-left has-background-grey-light" 
+		     style="width: 2px; align-self: normal; opacity: 0.25">
+			<!-- Spacer -->
+			<span style="">&nbsp;</span>
+		</div>
+	}
+	<figure class="media-left is-hidden-mobile is-hidden-tablet-only">
+		<p class="image is-48x48">
+			<img src="@Status.Account.AvatarUrl" alt="">
+		</p>
+	</figure>
+	<div class="media-content">
+		<div class="content">
+			<span style="white-space: nowrap">
+				<strong>@Status.Account.DisplayName</strong>
+				@if (!Node.IsRoot) {
+					<a class="button is-small is-info mx-2" href="@(NavigationManager.BaseUri + Instance)/@(Status.Id)">
+						Focus this Toot
+					</a><br/>
+				}
+				<small style="white-space: nowrap">@@@Status.Account.AccountName@@@(new Uri(Status.Account.ProfileUrl).Host)</small>
+				</span>
+			<br/>
+			@((MarkupString)Status.Content)
+		</div>
+		
+		<div class="level is-mobile">
+			<span class="level-left">
+				@if (Node.Children.Count > 0) {
+					<button class="level-item button is-white has-text-primary" @onclick="ToggleReplyVisibility">
+						@if (RepliesHidden) {
+							<span>Show Replies</span>
+						}
+						else {
+							<span>Hide Replies</span>
+						}
+					</button>
+				} else {
+					<button class="level-item button is-white has-text-grey" disabled>Hide Replies</button>
+				}
+				<span class="level-item">
+					<i data-feather="repeat" style="width: 1rem; margin-right: 0.2rem"></i>
+					@Status.RepliesCount
+				</span>
+				<span class="level-item">
+					<i data-feather="star" style="width: 1rem; margin-right: 0.2rem"></i>
+					@Status.FavouritesCount
+				</span>
+			</span>
+			<span class="level-right" style="white-space: nowrap">
+				<small>@Status.CreatedAt</small>
+			</span>
+		</div>
+
+		<div class="@RepliesCssClass">
+			@if (Node.Children.Count > 0) {
+				@foreach (var child in Node.Children) {
+					<StatusTreeNodeComponent Node="@child" Instance="@Instance" />
+				}
+			}
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public string Instance { get; set; } = null!;
+	[Parameter]
+	public StatusTreeNode Node { get; set; } = null!;
+	private Status Status => Node.Status;
+
+	private bool RepliesHidden { get; set; }
+	private string? RepliesCssClass => RepliesHidden ? "is-hidden" : null;
+
+	private void ToggleReplyVisibility() {
+		RepliesHidden = !RepliesHidden;
+	}
+}

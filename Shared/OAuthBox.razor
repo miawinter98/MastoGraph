@@ -1,0 +1,136 @@
+﻿@using Mastonet
+@using Mastonet.Entities
+@using Newtonsoft.Json
+@inject LocalStorage LocalStorage
+@inject NavigationManager NavigationManager
+
+<div class="box">
+	@if (Client != null) {
+		<div class="content">
+			<h2 class="title">OAuth2</h2>
+			<p class="subtitle">Logged in</p>
+			<p>@@@Username</p>
+		</div>
+		<button type="button" class="button is-danger" @onclick="Logout">Log Out</button>
+	} else {
+		<h2 class="title">OAuth2</h2>
+		<div class="field">
+			<label class="label">Instance</label>
+			<input class="input" type="url" @bind="Instance" placeholder="The Instance of your Account"
+			       keypress="(e) => { if(e.key == 'Enter') { e.preventDefault(); document.getElementById('LoginButton').click(); } }" />
+		</div>
+		<button id="LoginButton" type="button" class="button is-primary" @onclick="Login">Log In</button>
+	}
+</div>
+
+@code {
+	[Parameter]
+	public string? Token { get; set; }
+	private string? Instance { get; set; }
+
+	private string? Username { get; set; } = "err: username unknown";
+	private MastodonClient? Client { get; set; }
+
+	private const string AppName = "MastoGraph";
+	private const string ClientKeyName = AppName+".MastodonClient";
+	private const string ApplicationKeyName = AppName+".MastodonApplication";
+
+	private TaskCompletionSource LoadingTaskSource { get; } = new();
+	public Task LoadingTask => LoadingTaskSource.Task;
+
+	protected override async Task OnInitializedAsync() {
+		try {
+			// MastodonClient doesn't play nice with Newtonsoft.Json (can't find constructor)
+			var clientData = await GetFromLocalStoreRawFlat(ClientKeyName);
+			if (clientData != null) {
+				string token = clientData[nameof(MastodonClient.AccessToken)];
+				string instance = clientData[nameof(MastodonClient.Instance)];
+				Client = new MastodonClient(instance, token);
+			}
+			if (Token != null && Client == null) {
+				Client = await FinishAuthentication(Token);
+			}
+			if (Client != null) Username = (await Client.GetCurrentUser()).DisplayName;
+		} finally {
+			LoadingTaskSource.SetResult();
+		}
+	}
+
+	private async Task Login() {
+		if (Instance == null) return;
+
+		var auth = new AuthenticationClient(Instance);
+#if DEBUG
+		var app = await auth.CreateApp(AppName, Scope.Read, "https://mastograph.miawinter.de");
+		string url = auth.OAuthUrl();
+#else
+		string redirectUri = "https://mastograph.miawinter.de/";
+		var app = await auth.CreateApp(AppName, Scope.Read, "https://mastograph.miawinter.de", redirectUri);
+		string url = auth.OAuthUrl(redirectUri);
+#endif
+		await SetInLocalStorage(ApplicationKeyName, app);
+		NavigationManager.NavigateTo(url);
+	}
+
+	private async Task<MastodonClient> FinishAuthentication(string token) {
+		var app = await GetFromLocalStore<AppRegistration>(ApplicationKeyName);
+		var auth = new AuthenticationClient(app!);
+		var oauth2 = await auth.ConnectWithCode(token, "https://mastograph.miawinter.de/");
+		var client = new MastodonClient(app!.Instance, oauth2.AccessToken);
+		await SetInLocalStorage(ClientKeyName, client);
+		return client;
+	}
+
+	private async Task Logout() {
+		await LocalStorage.ClearAsync();
+		Client = null;
+	}
+
+	public MastodonClient? GetClient() {
+		return Client;
+	}
+
+	private async Task DeleteFromStorage(string key) {
+		await LocalStorage.RemoveValueAsync(key);
+	}
+
+	private async Task<Dictionary<string, string>?> GetFromLocalStoreRawFlat(string key)
+	{
+		string? data = await LocalStorage.GetValueAsync<string?>(key);
+		try {
+			if (data != null) {
+				return JsonConvert.DeserializeObject<Dictionary<string, string>>(data, new JsonSerializerSettings() {
+					ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+				})!;
+			}
+		} catch (Exception ex) {
+	// TODO
+			Console.WriteLine(ex);
+		}
+		return null;
+	}
+
+	private async Task<T?> GetFromLocalStore<T>(string key) where T : class {
+		string? data = await LocalStorage.GetValueAsync<string?>(key);
+		try {
+			if (data != null) {
+				return JsonConvert.DeserializeObject<T>(data, new JsonSerializerSettings() {
+					ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+				})!;
+			}
+		} catch (Exception ex) {
+			// TODO
+			Console.WriteLine(ex);
+		}
+		return null;
+	}
+
+	private async Task SetInLocalStorage<T>(string key, T value) {
+		try {
+			await LocalStorage.SetValueAsync<string?>(key, JsonConvert.SerializeObject(value));
+		} catch (Exception ex) {
+			// TODO
+			Console.WriteLine(ex);
+		}
+	}
+}

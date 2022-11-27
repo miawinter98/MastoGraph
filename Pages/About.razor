@@ -1,0 +1,63 @@
+﻿@page "/about"
+
+<section class="content">
+	<h1>About MastoGraph</h1>
+	
+	<h2>What is MastoGraph?</h2>
+	<p>
+		MastoGraph is a small Blazor WebAssembly App that uses the REST-API from Mastodon to get a Toot-Thread
+		(called a Status-Context) and visualize it in a more readable way.
+	</p>
+	
+	<h2>Why does this App exist?</h2>
+	<p>
+		After some escalations in a couple threads, some mutuals and me agreed that the default display format of 
+		Mastodon replies, a flat List, is confusing and doesn't visualize who replied to what properly.
+	</p>
+	<p>
+		After <a href="https://tech.lgbt/@@natty">@@natty</a> made a python script that (I think) called some endpoint 
+		and extracted the threat, then using a lib to render it as a Graph, I felt like contributing.<br />
+		While her approach already worked, I felt like I wanted to make something more fancy, and since I wanted to try
+		out making something in Blazor for a while now, I thought "Let's make it a PWA WebAssembly App".
+	</p>
+	
+	<h2>How does this work... exactly?</h2>
+	<p>
+		Well, the base tech used is the Blazor WebAssembly project (including PWA). This basically allows me, to develop
+		the tool using razor-pages (mixed html + C#), which then get's compiled into a static website and executed by
+		the Client using WebAssembly. So, when using this Site (like right now), your browser is executing javascript 
+		that runs c# code (I could also compile it, but that apparently takes ages).
+	</p>
+	
+	<h2>Used Libraries and Licenses</h2>
+	
+	<dl>
+		<dt><a href="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor" target="_blank">Blazor</a></dt>
+		<dd>
+			Using the WebAssembly Layout + PWA without Asp.Net Core host. <br />
+			Everything Licensed under MIT, Microsoft. <br />
+		</dd>
+		<dt><a href="https://bulma.io" target="_blank">Bulma</a></dt>
+		<dd>
+			My favorite CSS Framework. <br />
+			Licensed under <a href="https://github.com/jgthms/bulma/blob/master/LICENSE">MIT</a>. <br />
+			Copyright &copy; 2022 Jeremy Thomas.
+		</dd>
+		<dt><a href="https://github.com/glacasa/Mastonet" target="_blank">Mastonet</a></dt>
+		<dd>
+			The Mastodon-API wrapper that we use. <br />
+			Licensed under <a href="https://github.com/glacasa/Mastonet/blob/main/LICENSE">MIT</a>. <br />
+			Copyright &copy; 2017 Guillaume Lacasa.
+		</dd>
+		<dt><a href="https://github.com/feathericons/feather">Feather</a></dt>
+		<dd>
+			Feather is an Icon Library I use for the little Icons in the Toots. <br />
+			Licensed under <a href="https://github.com/feathericons/feather/blob/master/LICENSE">MIT</a>. <br />
+			Copyright &copy; 2013-2017 Cole Bemis.
+		</dd>
+	</dl>
+</section>
+
+@code {
+
+}

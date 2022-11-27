@@ -1,0 +1,124 @@
+﻿@page "/"
+@page "/{Instance}/{StatusId}"
+@using System.Web
+@using Mastonet
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<PageTitle>MastoGraph</PageTitle>
+
+<progress style="position: absolute; left: 0; top: -2rem"
+          class="progress is-small is-primary @(Loading ? "" : "is-hidden")" max-value="100">
+	Loading...
+</progress>
+
+@if(Tree == null) {
+	<div class="columns is-multiline">
+		<h1 class="title column is-full">MastoGraph</h1>
+		<span class="subtitle column is-full">Beautifying Mastodon-Threads since... yesterday</span>
+		<form class="column is-full-mobile is-two-thirds-tablet is-half-desktop">
+			<h2 class="title">Toot URL</h2>
+			<div class="field">
+				<label class="label">Share URL</label>
+				<input class="input" type="url" @bind="@Url"
+				       placeholder="URL optained by clicking copy link or share (link)" />
+			</div>
+			<h2 class="title">Account Information</h2>
+			<h3 class="subtitle">Optional: Needed to get private toots</h3>
+
+			<OAuthBox @ref="Authentication" Token="@Code" />
+			
+			<p>@Message</p>
+			<button type="button" class="button is-primary" @onclick="@ReadToots">Get them Toots!</button>
+		</form>
+	</div>
+} else {
+	<section style="overflow-x: auto">
+		<div class="pagination">
+			<button class="pagination-previous"
+			        @onclick="Reset">
+				Go Back
+			</button>
+		</div>
+
+		<h1 class="title is-size-1">The Toots</h1>
+
+		<StatusTreeNodeComponent Node="@Tree" Instance="@Instance" />
+	</section>
+}
+
+@code {
+	[Parameter] public string? Instance { get; set; }
+	[Parameter] public string? StatusId { get; set; }
+	public string? Code { get; set; }
+	
+	private string Url { get; set; } = "";
+
+	private bool Loading { get; set; } = false;
+	private string Message { get; set; } = "Ready";
+	
+	private StatusTreeNode? Tree { get; set; }
+	private OAuthBox? Authentication { get; set; }
+
+	protected override void OnInitialized() {
+		var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+		var query = HttpUtility.ParseQueryString(uri.Query);
+		Code = query["code"];
+		if (Code == null) Console.WriteLine("No Token");
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		await JS.InvokeVoidAsync("feather.replace");
+	}
+
+	protected override async Task OnInitializedAsync() {
+		if (Instance != null && StatusId != null) {
+			Url = $"https://{Instance}/{StatusId}";
+			await ReadToots();
+		}
+	}
+
+	protected override async Task OnParametersSetAsync() {
+		if (Instance != null && StatusId != null) {
+			Url = $"https://{Instance}/{StatusId}";
+			await ReadToots();
+		}
+	}
+	
+	private async Task ReadToots() {
+		Loading = true;
+		try {
+			if (Authentication != null) {
+				Message = "Waiting for Client";
+				await Authentication.LoadingTask;
+			}
+
+			var uri = new Uri(Url);
+			var authClient = Authentication?.GetClient() ?? new MastodonClient(uri.Host, "");
+			var client = authClient.Instance == uri.Host ? authClient : new MastodonClient(uri.Host, "");
+			
+			Message = "Getting Toots...";
+			string status = Url.Split('/').Last();
+			var source = await client.GetStatus(status);
+			Tree = new StatusTreeNode(source) { IsRoot = true };
+
+			var context = await client.GetStatusContext(status);
+			foreach (var descendant in context.Descendants) {
+				Tree.AddNode(new StatusTreeNode(descendant));
+			}
+
+			Instance = uri.Host;
+			StatusId = Tree.Status.Id;
+			NavigationManager.NavigateTo($"/{Instance}/{StatusId}");
+		} catch (Exception ex) {
+			Message = $"[{ex.GetType().Name}] {ex.Message}";
+		} finally {
+			Loading = false;
+		}
+	}
+
+	private void Reset() {
+		Tree = null;
+		Message = "Ready";
+	}
+}

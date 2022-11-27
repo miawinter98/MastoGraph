@@ -1,0 +1,32 @@
+﻿<nav class="navbar is-primary">
+	<div class="navbar-brand">
+		<a class="navbar-item" href="https://mastograph.miawinter.de/">MastoGraph</a>
+
+		<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @onclick="ToggleNavMenu">
+			<span aria-hidden="true"></span>
+			<span aria-hidden="true"></span>
+			<span aria-hidden="true"></span>
+		</a>
+	</div>
+
+	<div class="navbar-menu @NavMenuCssClass">
+		<div class="navbar-end">
+			<NavLink class="navbar-item" href="" Match="NavLinkMatch.All">
+				Home
+			</NavLink>
+			<NavLink class="navbar-item" href="about" Match="NavLinkMatch.All">
+				About
+			</NavLink>
+		</div>
+	</div>
+</nav>
+
+@code {
+    private bool ShowNavigationMenu { get; set; }
+
+    private string? NavMenuCssClass => ShowNavigationMenu ? "is-active" : null;
+
+    private void ToggleNavMenu() {
+        ShowNavigationMenu = !ShowNavigationMenu;
+    }
+}
