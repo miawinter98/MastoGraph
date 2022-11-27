@@ -18,10 +18,19 @@
 		<span class="subtitle column is-full">Beautifying Mastodon-Threads since... yesterday</span>
 		<form class="column is-full-mobile is-two-thirds-tablet is-half-desktop">
 			<h2 class="title">Toot URL</h2>
-			<div class="field">
-				<label class="label">Share URL</label>
-				<input class="input" type="url" @bind="@Url"
-				       placeholder="URL optained by clicking copy link or share (link)" />
+			<div class="field has-addons">
+				<div class="control">
+					<button type="button" class="button is-static">Share URL</button>
+				</div>
+				<div class="control is-expanded">
+					<input class="input" type="url" @bind="@Url"
+					       placeholder="URL optained by clicking copy link or share (link)"/>
+				</div>
+				<div class="control">
+					<button type="button" class="button" @onclick="() => Url = string.Empty">
+						<i data-feather="trash"></i>
+					</button>
+				</div>
 			</div>
 			<h2 class="title">Account Information</h2>
 			<h3 class="subtitle">Optional: Needed to get private toots</h3>
