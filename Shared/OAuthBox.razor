@@ -20,6 +20,7 @@
 			       keypress="(e) => { if(e.key == 'Enter') { e.preventDefault(); document.getElementById('LoginButton').click(); } }" />
 		</div>
 		<button id="LoginButton" type="button" class="button is-primary" @onclick="Login">Log In</button>
+		<span class="ml-2">@Message</span>
 	}
 </div>
 
@@ -37,6 +38,8 @@
 
 	private TaskCompletionSource LoadingTaskSource { get; } = new();
 	public Task LoadingTask => LoadingTaskSource.Task;
+
+	private string Message { get; set; } = "";
 
 	protected override async Task OnInitializedAsync() {
 		try {
@@ -72,13 +75,22 @@
 		NavigationManager.NavigateTo(url);
 	}
 
-	private async Task<MastodonClient> FinishAuthentication(string token) {
-		var app = await GetFromLocalStore<AppRegistration>(ApplicationKeyName);
-		var auth = new AuthenticationClient(app!);
-		var oauth2 = await auth.ConnectWithCode(token, "https://mastograph.miawinter.de/");
-		var client = new MastodonClient(app!.Instance, oauth2.AccessToken);
-		await SetInLocalStorage(ClientKeyName, client);
-		return client;
+	private async Task<MastodonClient?> FinishAuthentication(string token) {
+		try {
+			var app = await GetFromLocalStore<AppRegistration>(ApplicationKeyName);
+			if (app == null) return null; // We got a Code but never registered a Client
+			Message = "Authenticating...";
+			var auth = new AuthenticationClient(app);
+			var oauth2 = await auth.ConnectWithCode(token, "https://mastograph.miawinter.de/");
+			var client = new MastodonClient(app!.Instance, oauth2.AccessToken);
+			await SetInLocalStorage(ClientKeyName, client);
+			return client;
+		} catch (Exception ex) {
+			Console.WriteLine(ex);
+			Message = $"Authentication failed: [{ex.GetType().Name}] {ex.Message}.";
+			await Logout();
+		}
+		return null;
 	}
 
 	private async Task Logout() {

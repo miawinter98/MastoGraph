@@ -1,6 +1,5 @@
 ﻿@page "/"
 @page "/{Instance}/{StatusId}"
-@using System.Web
 @using Mastonet
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
@@ -59,8 +58,9 @@
 @code {
 	[Parameter] public string? Instance { get; set; }
 	[Parameter] public string? StatusId { get; set; }
+	[Parameter, SupplyParameterFromQuery(Name = "code")]
 	public string? Code { get; set; }
-	
+
 	private string Url { get; set; } = "";
 
 	private bool Loading { get; set; } = false;
@@ -68,19 +68,13 @@
 	
 	private StatusTreeNode? Tree { get; set; }
 	private OAuthBox? Authentication { get; set; }
-
-	protected override void OnInitialized() {
-		var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-		var query = HttpUtility.ParseQueryString(uri.Query);
-		Code = query["code"];
-		if (Code == null) Console.WriteLine("No Token");
-	}
-
+	
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
 		await JS.InvokeVoidAsync("feather.replace");
 	}
 
 	protected override async Task OnInitializedAsync() {
+		Console.WriteLine("Code: " + Code);
 		if (Instance != null && StatusId != null) {
 			Url = $"https://{Instance}/{StatusId}";
 			await ReadToots();
