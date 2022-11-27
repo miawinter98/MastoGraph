@@ -74,7 +74,6 @@
 	}
 
 	protected override async Task OnInitializedAsync() {
-		Console.WriteLine("Code: " + Code);
 		if (Instance != null && StatusId != null) {
 			Url = $"https://{Instance}/{StatusId}";
 			await ReadToots();
@@ -87,7 +86,7 @@
 			await ReadToots();
 		}
 	}
-	
+
 	private async Task ReadToots() {
 		Loading = true;
 		try {

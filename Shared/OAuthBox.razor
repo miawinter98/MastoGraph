@@ -64,7 +64,7 @@
 
 		var auth = new AuthenticationClient(Instance);
 #if DEBUG
-		var app = await auth.CreateApp(AppName, Scope.Read, "https://mastograph.miawinter.de");
+		var app = await auth.CreateApp(AppName, Scope.Read);
 		string url = auth.OAuthUrl();
 #else
 		string redirectUri = "https://mastograph.miawinter.de/";
@@ -81,7 +81,11 @@
 			if (app == null) return null; // We got a Code but never registered a Client
 			Message = "Authenticating...";
 			var auth = new AuthenticationClient(app);
+#if DEBUG
+		var oauth2 = await auth.ConnectWithCode(token);
+#else
 			var oauth2 = await auth.ConnectWithCode(token, "https://mastograph.miawinter.de/");
+#endif
 			var client = new MastodonClient(app!.Instance, oauth2.AccessToken);
 			await SetInLocalStorage(ClientKeyName, client);
 			return client;
