@@ -43,6 +43,18 @@ async function onFetch(event) {
         const cache = await caches.open(cacheName);
         cachedResponse = await cache.match(request);
     }
+    if (event.request.method === 'POST' && url.pathname === '/') {
+        event.respondWith((async () => {
+            const formData = await event.request.formData();
+            const link = formData.get('link') || formData.get('text');
+            if (link) {
+                const instance = new URL(link).host;
+                const components = link.split("/");
+                const statusId = components[components[components.length - 1]];
+                return Response.redirect("/" + instance + "/" + statusId, 303);
+            }
+        })());
+    }
 
     return cachedResponse || fetch(event.request);
 }
