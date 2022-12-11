@@ -5,9 +5,31 @@ $primary: #0D47A1;
 
 @import "lib/bulma/bulma.sass";
 
+
+// Custom Stuff
+// ------------
+
+.image.is-sensitive {
+    & > img, & > video {
+        -webkit-filter: blur(2rem);
+        filter: blur(2rem);
+    }
+
+    &::before {
+        display: block;
+        content: "press to reveil";
+        color: white;
+        z-index: 1;
+        position: absolute;
+        top: 10px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+    }
+}
+
 // Blazor schenanigans
 // -------------------
-
 html, body {
     margin: 0;
     height: 100%;

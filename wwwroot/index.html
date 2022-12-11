@@ -36,5 +36,20 @@
 <script src="_framework/blazor.webassembly.js"></script>
 <script>navigator.serviceWorker.register('service-worker.js');</script>
 
+<script>
+    document.addEventListener("click", function (event) { 
+		event = event || window.event;
+        let target = event.target || event.srcElement;
+        if (target.tagName == "FIGURE") target = target.firstElementChild;
+        
+        let parent = target.parentNode
+        
+        let isImageOrVideo = target.nodeName == "IMG" || target.nodeName == "VIDEO";
+        if (isImageOrVideo && parent.nodeName == "FIGURE" && parent.classList.contains('image')) {
+            parent.classList.toggle("is-sensitive");
+        }
+	});
+</script>
+
 </body>
 </html>

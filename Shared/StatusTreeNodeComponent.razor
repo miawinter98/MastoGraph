@@ -43,6 +43,69 @@
 			} else {
 				@((MarkupString)Status.Content)
 			}
+			<div class="columns is-multiline is-vcentered">
+				@foreach (var attachment in Status.MediaAttachments) {
+					switch (attachment.Type) {
+						case "image":
+							<div class="column is-one-quarter">
+								<figure class="image @SensitiveClass">
+									<img src="@attachment.PreviewUrl" 
+									     width="@attachment.Meta?.Small?.Width"
+										 height="@attachment.Meta?.Small?.Height"
+									     alt=""
+									     loading="lazy" />
+									<figcaption>@attachment.Description</figcaption>
+								</figure>
+							</div>
+							break;
+						case "video":
+							<div class="column is-one-quarter">
+								<figure class="image @SensitiveClass">
+									<video src="@attachment.Url"
+									       width="@attachment.Meta?.Small?.Width"
+									       height="@attachment.Meta?.Small?.Height"
+									       alt=""
+									       controls>
+										Your browser does not support the video tag. Here is the URL:
+										<a href="@attachment.Url">@attachment.Url</a>
+									</video>
+									<figcaption>@attachment.Description</figcaption>
+								</figure>
+							</div>
+							break;
+						case "gifv":
+							<div class="column is-one-quarter">
+								<figure class="image @SensitiveClass">
+									<video src="@attachment.Url"
+									       width="@attachment.Meta?.Small?.Width"
+									       height="@attachment.Meta?.Small?.Height"
+									       alt=""
+									       loop autoplay muted controls>
+										Your browser does not support the video tag. Here is the URL:
+										<a href="@attachment.Url">@attachment.Url</a>
+									</video>
+									<!-- we mute just in case... -->
+									<figcaption>@attachment.Description</figcaption>
+								</figure>
+							</div>
+							break;
+						case "audio":
+							<div class="column is-full">
+								<audio>
+									<source src="@attachment.Url" alt="@attachment.Description" />
+									Your browser does not support the audio tag. Here is the URL:
+									<a href="@attachment.Url">@attachment.Url</a>
+								</audio>
+							</div>
+							break;
+						default:
+							<div clas="column is-full">
+								<a href="@attachment.Url">@attachment.Url</a>
+							</div>
+							break;
+					}
+				}
+			</div>
 		</div>
 		
 		<div class="level is-mobile">
@@ -93,6 +156,8 @@
 	[Parameter]
 	public StatusTreeNode Node { get; set; } = null!;
 	private Status Status => Node.Status;
+
+	private string SensitiveClass => Status.Sensitive == true ? "is-sensitive" : "";
 
 	private bool RepliesHidden { get; set; }
 	private string? RepliesCssClass => RepliesHidden ? "is-hidden" : null;
