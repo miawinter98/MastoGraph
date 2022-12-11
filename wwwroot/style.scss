@@ -10,6 +10,7 @@ $primary: #0D47A1;
 // ------------
 
 .image.is-sensitive {
+    overflow: hidden;
     & > img, & > video {
         -webkit-filter: blur(2rem);
         filter: blur(2rem);

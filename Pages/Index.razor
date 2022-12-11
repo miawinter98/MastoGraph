@@ -15,7 +15,7 @@
 	<div class="columns is-multiline">
 		<h1 class="title column is-full">MastoGraph</h1>
 		<span class="subtitle column is-full">Beautifying Mastodon-Threads since... yesterday</span>
-		<form class="column is-full-mobile is-two-thirds-tablet is-half-desktop">
+		<div class="column is-full-mobile is-two-thirds-tablet is-half-desktop">
 			<h2 class="title">Toot URL</h2>
 			<div class="field has-addons">
 				<div class="control">
@@ -23,6 +23,7 @@
 				</div>
 				<div class="control is-expanded">
 					<input class="input" type="url" @bind="@Url"
+					       onkeypress="if(event.key='Enter') { document.getElementById('SubmitButton').click(); }"
 					       placeholder="URL optained by clicking copy link or share (link)"/>
 				</div>
 				<div class="control">
@@ -37,8 +38,8 @@
 			<OAuthBox @ref="Authentication" Token="@Code" />
 			
 			<p>@Message</p>
-			<button type="button" class="button is-primary" @onclick="@ReadToots">Get them Toots!</button>
-		</form>
+			<button id="SubmitButton" type="button" class="button is-primary" @onclick="@ReadToots">Get them Toots!</button>
+		</div>
 	</div>
 } else {
 	<section>
