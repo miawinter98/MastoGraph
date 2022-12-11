@@ -41,6 +41,7 @@
 		event = event || window.event;
         let target = event.target || event.srcElement;
         if (target.tagName == "FIGURE") target = target.firstElementChild;
+        if (target.tagName == "FIGCAPTION") target = target.parentNode.firstElementChild;
         
         let parent = target.parentNode
         
