@@ -9,12 +9,30 @@ and I don't know how to change that or if it is even possible.
 
 Styling is done with [Bulma](Bulma.io) and [Feather Icons](https://feathericons.com). 
 
-Every referenced library is under MIT License, hence this tools is too bc I like MIT.
+Every referenced library is under MIT License, hence this tools is too bc I like MIT, use this Software for good etc..
+
+Mastograph is currently running on my Website [mastograph.miawinter.de](https://mastograph.miawinter.de/)
+
+## Current Features
+
+- Get a toot from a URL 
+- Display toot and all replies to it
+- nest replies beneth each other
+- Hide toot button to collapse a branch 
+- Logging in via OAuth2 
+- PWA Support
+
+### Supported types:
+
+- Standard Post
+- Post with Content Warning 
+- Post with Media, inkluding Image, Gif, Video and Audio (audio untested)
+- Post with sensitive Media 
 
 # Missing Features
 
-- Polls are currently not displayed
-- Button to hide Profile picutres (Megathread mode)
+- Posts with Polls are currently not supported
+- Button to hide Profile pictures (Megathread mode)
 - Better horizontal scrollability (Bulma really doesn't like that one)
 - Maybe: Honor the users "Hide Media by default" setting if they are logged in or make it a 
 setting in the app itself
