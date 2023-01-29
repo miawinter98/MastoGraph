@@ -34,5 +34,6 @@ Mastograph is currently running on my Website [mastograph.miawinter.de](https://
 - Posts with Polls are currently not supported
 - Button to hide Profile pictures (Megathread mode)
 - Better horizontal scrollability (Bulma really doesn't like that one)
+- Figure out how custom emojis work 
 - Maybe: Honor the users "Hide Media by default" setting if they are logged in or make it a 
 setting in the app itself
