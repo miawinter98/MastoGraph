@@ -50,6 +50,13 @@
             parent.classList.toggle("is-sensitive");
         }
 	});
+    
+    function toggleMegathreadMode() {
+        const pictures = document.querySelectorAll(".profile-picture");
+        for (const picture of pictures) {
+            picture.classList.toggle("is-hidden");
+        }
+    }
 </script>
 
 </body>

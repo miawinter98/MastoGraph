@@ -15,7 +15,7 @@
 		</div>
 	}
 	<figure class="media-left is-hidden-mobile is-hidden-tablet-only">
-		<p class="image is-48x48">
+		<p class="image is-48x48 profile-picture">
 			<img src="@Status.Account.AvatarUrl" loading="lazy" alt="">
 		</p>
 	</figure>
@@ -191,7 +191,7 @@
 	private Status Status => Node.Status;
 
 	private string SensitiveClass => Status.Sensitive == true ? "is-sensitive" : "";
-
+	
 	private bool RepliesHidden { get; set; }
 	private string? RepliesCssClass => RepliesHidden ? "is-hidden" : null;
 

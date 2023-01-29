@@ -45,8 +45,15 @@
 	<section>
 		<div class="pagination">
 			<button class="pagination-previous"
+			        title="Hides all profile pictures (if you are on mobile, they are already hidden). 
+						   This improves readability in really big threads"
 			        @onclick="Reset">
 				Go Back
+			</button>
+		</div>
+		<div class="my-2">
+			<button class="button is-primary" onclick="toggleMegathreadMode()">
+				Toggle Megathread Mode
 			</button>
 		</div>
 
