@@ -20,7 +20,7 @@
 		</p>
 	</figure>
 	<div class="media-content">
-		<div class="content">
+		<div>
 			<div>
 				<strong style="white-space: nowrap">@Status.Account.DisplayName</strong>
 				@if (!Node.IsRoot) {
@@ -31,18 +31,53 @@
 				<br />
 				<small style="white-space: nowrap">@@@Status.Account.AccountName</small>
 			</div>
-			@if(!string.IsNullOrEmpty(Status.SpoilerText)) {
-				<CollapsableContent 
-					ButtonClass="is-danger is-small is-outlined my-1" 
-					CollapseLabel="@("CW: " + Status.SpoilerText)"
-					IsHidden="true">
-					<Content>
-						@((MarkupString) Status.Content)
-					</Content>
-				</CollapsableContent>
-			} else {
-				@((MarkupString)Status.Content)
-			}
+			<div class="content">
+				@if(!string.IsNullOrEmpty(Status.SpoilerText)) {
+					<CollapsableContent 
+						ButtonClass="is-danger is-small is-outlined my-1" 
+						CollapseLabel="@("CW: " + Status.SpoilerText)"
+						IsHidden="true">
+						<Content>
+							<p class="my-2">
+								@((MarkupString)Status.Content)
+							</p>
+						</Content>
+					</CollapsableContent>
+				} else {
+					<p class="my-2">
+						@((MarkupString)Status.Content)
+					</p>
+				}
+				@if (Status.Poll != null) {
+					<div class="box">
+						@{ var options = Status.Poll.Options.ToList(); }
+						@for (int i = 0; i < options.Count; i++) {
+							var option = options[i];
+							bool userHasVotedThis = Status.Poll.OwnVotes.Contains(i);
+							<div>
+								<p class="mt-1">
+									<span class="is-size-5">@option.Title</span>
+									<span class="level-left mr-1 is-size-6">@option.VotesCount Votes</span>
+								</p>
+								<p>
+									<progress class="progress is-medium @(userHasVotedThis ? "is-primary" : "")"
+									          value="@option.VotesCount"
+									          max="@Status.Poll.VotesCount">
+									</progress>
+								</p>
+							</div>
+						}
+						<p class="mt-1">
+							<span>@Status.Poll.VotesCount votes</span> -
+							@if (Status.Poll.Expired) {
+								<span>Closed</span>
+							} else if(Status.Poll.ExpiresAt.HasValue) {
+								<span>Closes on @Status.Poll.ExpiresAt.Value.ToString("F")</span>
+							}
+						</p>
+					</div>
+				}
+			</div>
 			<div class="columns is-multiline is-vcentered">
 				@foreach (var attachment in Status.MediaAttachments) {
 					switch (attachment.Type) {
@@ -106,46 +141,44 @@
 					}
 				}
 			</div>
-		</div>
-		
-		<div class="level is-mobile">
-			<span class="level-left">
+			<div class="level is-mobile">
+				<span class="level-left">
+					@if (Node.Children.Count > 0) {
+						<button class="level-item button is-white has-text-primary" @onclick="ToggleReplyVisibility">
+							@if (RepliesHidden) {
+								<span>Show Replies</span>
+							}
+							else {
+								<span>Hide Replies</span>
+							}
+						</button>
+					} else {
+						<button class="level-item button is-white has-text-grey" disabled>Hide Replies</button>
+					}
+					<span class="level-item">
+						<i data-feather="corner-down-right" style="width: 1rem; margin-right: 0.2rem"></i>
+						@Status.RepliesCount
+					</span>
+					<span class="level-item">
+						<i data-feather="repeat" style="width: 1rem; margin-right: 0.2rem"></i>
+						@Status.ReblogCount
+					</span>
+					<span class="level-item">
+						<i data-feather="star" style="width: 1rem; margin-right: 0.2rem"></i>
+						@Status.FavouritesCount
+					</span>
+				</span>
+				<span class="level-right is-hidden-mobile">
+					<small class="ml-2">@Status.CreatedAt</small>
+				</span>
+			</div>
+			<div class="@RepliesCssClass">
 				@if (Node.Children.Count > 0) {
-					<button class="level-item button is-white has-text-primary" @onclick="ToggleReplyVisibility">
-						@if (RepliesHidden) {
-							<span>Show Replies</span>
-						}
-						else {
-							<span>Hide Replies</span>
-						}
-					</button>
-				} else {
-					<button class="level-item button is-white has-text-grey" disabled>Hide Replies</button>
+					@foreach (var child in Node.Children) {
+						<StatusTreeNodeComponent Node="@child" Instance="@Instance" />
+					}
 				}
-				<span class="level-item">
-					<i data-feather="corner-down-right" style="width: 1rem; margin-right: 0.2rem"></i>
-					@Status.RepliesCount
-				</span>
-				<span class="level-item">
-					<i data-feather="repeat" style="width: 1rem; margin-right: 0.2rem"></i>
-					@Status.ReblogCount
-				</span>
-				<span class="level-item">
-					<i data-feather="star" style="width: 1rem; margin-right: 0.2rem"></i>
-					@Status.FavouritesCount
-				</span>
-			</span>
-			<span class="level-right is-hidden-mobile">
-				<small class="ml-2">@Status.CreatedAt</small>
-			</span>
-		</div>
-
-		<div class="@RepliesCssClass">
-			@if (Node.Children.Count > 0) {
-				@foreach (var child in Node.Children) {
-					<StatusTreeNodeComponent Node="@child" Instance="@Instance" />
-				}
-			}
+			</div>
 		</div>
 	</div>
 </div>
