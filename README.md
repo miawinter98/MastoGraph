@@ -21,6 +21,7 @@ Mastograph is currently running on my Website [mastograph.miawinter.de](https://
 - Hide toot button to collapse a branch 
 - Logging in via OAuth2 
 - PWA Support
+- "Megathread Mode" - Button that hides profile Pictures
 
 ### Supported types:
 
@@ -28,11 +29,10 @@ Mastograph is currently running on my Website [mastograph.miawinter.de](https://
 - Post with Content Warning 
 - Post with Media, inkluding Image, Gif, Video and Audio (audio untested)
 - Post with sensitive Media 
+- Polls
 
 # Missing Features
 
-- Posts with Polls are currently not supported
-- Button to hide Profile pictures (Megathread mode)
 - Better horizontal scrollability (Bulma really doesn't like that one)
 - Figure out how custom emojis work 
 - Maybe: Honor the users "Hide Media by default" setting if they are logged in or make it a 
